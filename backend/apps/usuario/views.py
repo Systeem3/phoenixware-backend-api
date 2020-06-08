@@ -7,7 +7,7 @@ from rest_auth.registration.views import RegisterView
 
 from .serializers import UsuarioSerializer
 from .models import Usuario
-from .permissions import IsAuthenticatedAndAdminUser
+from .permissions import IsAuthenticatedAndAdminUser, AllowAnyUser
 
 
 class UsuarioListViewSet(ListAPIView):
@@ -26,4 +26,5 @@ class UsuarioDetailUpdateViewSet(RetrieveUpdateAPIView):
 
 class CustomRegisterView(RegisterView):
     """adding permission to only admin users"""
-    permission_classes = [IsAuthenticatedAndAdminUser, ]
+#    permission_classes = [IsAuthenticatedAndAdminUser, ]
+    permission_classes = [AllowAnyUser, ]
