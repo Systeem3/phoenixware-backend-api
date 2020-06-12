@@ -1,13 +1,17 @@
 """Views of the usuario app"""
+from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.generics import (
     ListAPIView,
     RetrieveUpdateAPIView,
 )
 from rest_auth.registration.views import RegisterView
+from django.utils.translation import ugettext_lazy as _
 
 from .serializers import UsuarioSerializer
 from .models import Usuario
 from .permissions import IsAuthenticatedAndAdminUser, AllowAnyUser
+from utility.utility import send_mail
 
 
 class UsuarioListViewSet(ListAPIView):
@@ -26,5 +30,30 @@ class UsuarioDetailUpdateViewSet(RetrieveUpdateAPIView):
 
 class CustomRegisterView(RegisterView):
     """adding permission to only admin users"""
-#    permission_classes = [IsAuthenticatedAndAdminUser, ]
+    #    permission_classes = [IsAuthenticatedAndAdminUser, ]
     permission_classes = [AllowAnyUser, ]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        # Set some values to trigger the send_email function
+        values = {
+            'subject': 'subject',
+            'to_email': request.data.get('email'),
+            'html_email_template': 'registration_email.html',
+            'context': {
+                'nombre': request.data.get('nombre')
+            }
+        }
+        send_mail(**values)
+        response = self.get_response_data(user)
+        response.update({
+            "detail": _("e-mail has been sent.")
+        })
+        print(response)
+        return Response(response,
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
