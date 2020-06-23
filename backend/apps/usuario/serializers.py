@@ -8,15 +8,15 @@ from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm
-from .models import Empleado, Usuario, TipoUsuario
+from .models import Empleado, Usuario
 
 
 class CustomRegisterSerializer(RegisterSerializer):
     """Custom register serializer"""
     user_types = (
-        (1, "administrador"),
-        (2, "director"),
-        (3, "miembro")
+        ("1", "administrador"),
+        ("2", "director"),
+        ("3", "miembro")
     )
     username = None
     email = serializers.EmailField(required=True)
@@ -73,9 +73,9 @@ class CustomRegisterSerializer(RegisterSerializer):
             foto=self.cleaned_data["foto"]
         )
         empleado.save()
-        tipo_usuario_id = self.cleaned_data["tipo_usuario"]
+        tipo_usuario = self.cleaned_data["tipo_usuario"]
         user.empleado = empleado
-        user.tipo_usuario_id = tipo_usuario_id
+        user.tipo_usuario = tipo_usuario
         adapter.save_user(request, user, self)
         setup_user_email(request, user, [])
         self.custom_signup(request, user)
@@ -122,21 +122,14 @@ class EmpleadoSerializer(serializers.ModelSerializer):
         fields = ('nombre', 'apellido', 'direccion', 'telefono', 'foto')
 
 
-class TipoUsuarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TipoUsuario
-        fields = ('id', 'nombre',)
-        read_only_fields = ('id', 'nombre',)
-
-
 class UsuarioSerializerAuthenticated(serializers.ModelSerializer):
     """shows the details from the authenticated user"""
     empleado = EmpleadoSerializer()
-    tipo_usuario = TipoUsuarioSerializer(required=False)
 
     class Meta:  # pylint: disable=too-few-public-methods
         model = Usuario
         fields = ('email', 'empleado', 'tipo_usuario')
+        extra_kwargs = {'tipo_usuario': {'read_only': True}}
 
     def update(self, instance, validated_data):
         """overwrited update method for handle nested representations"""
@@ -158,18 +151,11 @@ class UsuarioSerializerAuthenticated(serializers.ModelSerializer):
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    user_types = (
-        (1, "administrador"),
-        (2, "director"),
-        (3, "miembro")
-    )
     empleado = EmpleadoSerializer()
-    tipo_usuario_write = serializers.ChoiceField(choices=user_types, write_only=True)
-    tipo_usuario = TipoUsuarioSerializer(required=False)
 
     class Meta:
         model = Usuario
-        fields = ('id', 'email', 'is_active', 'empleado', 'tipo_usuario_write', 'tipo_usuario')
+        fields = ('id', 'email', 'is_active', 'empleado', 'tipo_usuario')
 
     def update(self, instance, validated_data):
         """overwrited update method for handle nested representations"""
@@ -178,7 +164,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
         instance.email = validated_data.get('email', instance.email)
         instance.is_active = validated_data.get('is_active', instance.is_active)
-        instance.tipo_usuario_id = validated_data.get('tipo_usuario_write', instance.tipo_usuario_id)
+        instance.tipo_usuario = validated_data.get('tipo_usuario', instance.tipo_usuario)
         instance.save()
 
         empleado.nombre = empleado_data.get('nombre', empleado.nombre)
