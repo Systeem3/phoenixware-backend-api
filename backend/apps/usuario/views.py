@@ -38,6 +38,7 @@ class CustomRegisterView(RegisterView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
         # Set some values to trigger the send_email function
@@ -53,8 +54,12 @@ class CustomRegisterView(RegisterView):
         response = {
             "detail": _("Registro exitoso ")
         }
-        notify.send(request.user, recipient=serializer.data, verb='Bienvenido a PhoenixWare',
+        notify.send(request.user, recipient=user, verb='Bienvenido a PhoenixWare',
                     description='Bienvenido a PhoenixWare')
         return Response(response,
                         status=status.HTTP_201_CREATED,
                         headers=headers)
+
+    def perform_create(self, serializer):
+        user = serializer.save(self.request)
+        return user
