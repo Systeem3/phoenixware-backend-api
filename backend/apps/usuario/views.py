@@ -7,6 +7,7 @@ from rest_framework.generics import (
 )
 from rest_auth.registration.views import RegisterView
 from django.utils.translation import ugettext_lazy as _
+from notifications.signals import notify
 
 from .serializers import UsuarioSerializer
 from .models import Usuario
@@ -25,7 +26,8 @@ class UsuarioDetailUpdateViewSet(RetrieveUpdateAPIView):
     """gets an user data and allow update it"""
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAuthenticatedAndAdminUser, ]
+    # permission_classes = [IsAuthenticatedAndAdminUser, ]
+    permission_classes = [AllowAnyUser, ]
 
 
 class CustomRegisterView(RegisterView):
@@ -36,7 +38,6 @@ class CustomRegisterView(RegisterView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
         # Set some values to trigger the send_email function
@@ -49,11 +50,11 @@ class CustomRegisterView(RegisterView):
             }
         }
         send_mail(**values)
-        response = self.get_response_data(user)
-        response.update({
-            "detail": _("e-mail has been sent.")
-        })
-        print(response)
+        response = {
+            "detail": _("Registro exitoso ")
+        }
+        notify.send(request.user, recipient=serializer.data, verb='Bienvenido a PhoenixWare',
+                    description='Bienvenido a PhoenixWare')
         return Response(response,
                         status=status.HTTP_201_CREATED,
                         headers=headers)
