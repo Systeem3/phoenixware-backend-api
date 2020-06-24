@@ -7,7 +7,7 @@ from .models import Proyecto
 
 
 class ProyectoSerializer(serializers.ModelSerializer):
-    tipo = serializers.ChoiceField(choices=Proyecto.TYPE_PROJECT)
+    #tipo = serializers.ChoiceField(choices=Proyecto.TYPE_PROJECT)
 
     class Meta:
         model = Proyecto

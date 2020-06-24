@@ -17,7 +17,6 @@ class Empleado(models.Model):
         default='pictures/default.jpg',
         max_length=255
     )
-    estado = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nombre

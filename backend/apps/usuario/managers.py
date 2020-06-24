@@ -25,7 +25,7 @@ class CustomUserManager(BaseUserManager):
         """
         Create and save a SuperUser with the given email and password.
         """
-        extra_fields.setdefault('tipo_usuario', 1)
+        extra_fields.setdefault('tipo_usuario', "1")
 
         if extra_fields.get('tipo_usuario') is None:
             raise ValueError(_('Superuser must have type_user=1.'))

@@ -17,9 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+import notifications.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('api/auth/', include('apps.usuario.urls')),
     path('api/', include('apps.proyecto.urls'))
 ]
