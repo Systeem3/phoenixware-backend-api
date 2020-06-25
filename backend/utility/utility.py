@@ -1,7 +1,7 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
-
+from apps.usuario.models import Usuario
 
 def send_mail(subject, to_email, html_email_template, context):
     """
@@ -15,3 +15,11 @@ def send_mail(subject, to_email, html_email_template, context):
     email_message.attach_alternative(body, 'text/html')
 
     email_message.send()
+
+
+def get_list_users(query):
+    list_users = []
+    for data in query:
+        print(data["id"])
+        list_users.append(Usuario.objects.get(pk=data["id"]))
+    return list_users

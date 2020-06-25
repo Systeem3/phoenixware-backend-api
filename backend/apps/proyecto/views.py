@@ -1,12 +1,86 @@
 from rest_framework import (
     viewsets,
-    permissions
+    permissions,
+    status
 )
-from .models import Proyecto
-from .serializers import ProyectoSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.utils.translation import ugettext_lazy as _
+from notifications.signals import notify
+
+from .models import Proyecto, Reunion, Miembro
+from .serializers import ProyectoSerializer, ReunionSerializer, MiembroSerializer
+from ..usuario.models import Usuario
+from ..usuario.serializers import UsuarioSerializer
+from utility.utility import get_list_users
 
 
-class ProyectoViewset(viewsets.ModelViewSet):
+class ProyectoModelViewset(viewsets.ModelViewSet):
     queryset = Proyecto.objects.all()
     serializer_class = ProyectoSerializer
     permission_classes = [permissions.AllowAny, ]
+
+    def list(self, request):
+        user = request.user
+        if user.tipo_usuario == "1" or user.tipo_usuario == "2":
+            self.queryset = Proyecto.objects.all()
+        else:
+            query = """select * from Proyecto 
+                        inner join miembro on miembro.proyecto_id=Proyecto.id 
+                        where miembro.usuario_id={}""".format(user.id)
+            self.queryset = Proyecto.objects.raw(query)
+        serializer = ProyectoSerializer(self.queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def crear_reunion(self, request, pk=None):
+        my_proyecto = self.get_object()
+        user = request.user
+        miembro_query = Miembro.objects.filter(proyecto=my_proyecto, usuario=user)
+        miembro_serializer = MiembroSerializer(miembro_query, many=True)
+        if len(miembro_serializer.data) > 0:
+            if miembro_serializer.data[0]["rol"] == "L":
+                serializer = ReunionSerializer(data=request.data)
+                if serializer.is_valid():
+                    reunion = serializer.save(proyecto=my_proyecto)
+                    query = """select * from Usuario
+                                inner join miembro on miembro.proyecto_id={}
+                                where miembro.usuario_id=Usuario.id""".format(my_proyecto.id)
+                    queryset = Usuario.objects.raw(query)
+                    usuario_serializer = UsuarioSerializer(queryset, many=True)
+                    list_users = get_list_users(usuario_serializer.data)
+                    notify.send(user, recipient=list_users, verb=reunion.nombre,
+                                description=reunion.descripcion)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response = {
+            "detail": _("No permitido")
+        }
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=['get'])
+    def listar_reuniones(self, request, pk=None):
+        my_proyecto = self.get_object()
+        self.queryset = Reunion.objects.filter(proyecto=my_proyecto)
+        serializer = ReunionSerializer(self.queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def agregar_miembro(self, request, pk=None):
+        my_proyecto = self.get_object()
+        serializer = MiembroSerializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid():
+            serializer.save(proyecto=my_proyecto)
+            usuario = Usuario.objects.get(pk=request.data["usuario"])
+            notify.send(request.user, recipient=usuario, verb="te agregaron a un proyecto",
+                        description="bienvenido al proyecto")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['get'])
+    def listar_miembros(self, request, pk=None):
+        my_proyecto = self.get_object()
+        self.queryset = Miembro.objects.filter(proyecto=my_proyecto)
+        serializer = MiembroSerializer(self.queryset, many=True)
+        return Response(serializer.data)

@@ -3,12 +3,17 @@ from rest_framework import serializers
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Proyecto
+from .models import Proyecto, Metodologia, Reunion, Miembro
+
+
+class MetodologiaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Metodologia
+        fields = '__all__'
+        extra_kwargs = {'proyecto': {'required': False}}
 
 
 class ProyectoSerializer(serializers.ModelSerializer):
-    #tipo = serializers.ChoiceField(choices=Proyecto.TYPE_PROJECT)
-
     class Meta:
         model = Proyecto
         fields = '__all__'
@@ -22,3 +27,20 @@ class ProyectoSerializer(serializers.ModelSerializer):
         if data["fecha_finalizacion"] < data["fecha_inicio"]:
             raise serializers.ValidationError(_("la fecha de finalizacion no puede ser menor a la de inicio"))
         return data
+
+
+class ReunionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reunion
+        fields = '__all__'
+
+    def validate_fecha(self, fecha):
+        if fecha < datetime.now().date():
+            raise serializers.ValidationError(_("Date cannot be in the past"))
+        return fecha
+
+class MiembroSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Miembro
+        fields = '__all__'
+        extra_kwargs = {'proyecto': {'required': False}}

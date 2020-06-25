@@ -47,6 +47,20 @@ class Miembro(models.Model):
 
     class Meta:
         db_table = 'Miembro'
+        unique_together = (('proyecto', 'usuario'),)
+
+
+class Reunion(models.Model):
+    nombre = models.CharField(max_length=255)
+    descripcion = models.TextField()
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
+    fecha = models.DateField()
+    lugar = models.CharField(max_length=255)
+    estado = models.CharField(max_length=1)
+
+    class Meta:
+        db_table = 'Reunion'
+
 
 
 """class RiesgoProyecto(models.Model):

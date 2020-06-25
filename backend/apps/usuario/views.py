@@ -19,7 +19,7 @@ class UsuarioListViewSet(ListAPIView):
     """Shows the list users """
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAuthenticatedAndAdminUser, ]
+    permission_classes = [AllowAnyUser, ]
 
 
 class UsuarioDetailUpdateViewSet(RetrieveUpdateAPIView):
