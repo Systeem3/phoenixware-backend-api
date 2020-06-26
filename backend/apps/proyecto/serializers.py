@@ -39,6 +39,7 @@ class ReunionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_("Date cannot be in the past"))
         return fecha
 
+
 class MiembroSerializer(serializers.ModelSerializer):
     class Meta:
         model = Miembro

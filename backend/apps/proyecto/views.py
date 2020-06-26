@@ -12,6 +12,8 @@ from .models import Proyecto, Reunion, Miembro
 from .serializers import ProyectoSerializer, ReunionSerializer, MiembroSerializer
 from ..usuario.models import Usuario
 from ..usuario.serializers import UsuarioSerializer
+from ..proceso.serializers import ProcesoSerilizer
+from ..proceso.models import Proceso
 from utility.utility import get_list_users
 
 
@@ -22,6 +24,7 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
 
     def list(self, request):
         user = request.user
+        self.permission_classes = [permissions.IsAuthenticated, ]
         if user.tipo_usuario == "1" or user.tipo_usuario == "2":
             self.queryset = Proyecto.objects.all()
         else:
@@ -65,7 +68,7 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
         serializer = ReunionSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def agregar_miembro(self, request, pk=None):
         my_proyecto = self.get_object()
         serializer = MiembroSerializer(data=request.data)
@@ -83,4 +86,37 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
         my_proyecto = self.get_object()
         self.queryset = Miembro.objects.filter(proyecto=my_proyecto)
         serializer = MiembroSerializer(self.queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def crear_proceso(self, request, pk=None):
+        my_proyecto = self.get_object()
+        user = request.user
+        if user.tipo_usuario == "2":
+            serializer = ProcesoSerilizer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(proyecto=my_proyecto, metodologia=my_proyecto.metodologia)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        miembro_query = Miembro.objects.filter(proyecto=my_proyecto, usuario=user)
+        miembro_serializer = MiembroSerializer(miembro_query, many=True)
+
+        if len(miembro_serializer.data) > 0:
+            if miembro_serializer.data[0]["rol"] == "L":
+                serializer = ProcesoSerilizer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save(proyecto=my_proyecto, metodologia=my_proyecto.metodologia)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response = {
+            "detail": _("No permitido")
+        }
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def listar_procesos(self, request, pk=None):
+        my_proyecto = self.get_object()
+        self.queryset = Proceso.objects.filter(proyecto=my_proyecto)
+        serializer = ProcesoSerilizer(self.queryset, many=True)
         return Response(serializer.data)
