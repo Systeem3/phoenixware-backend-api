@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'notifications',
     'apps.usuario',
-    'apps.proyecto'
+    'apps.proyecto',
+    'apps.proceso'
 ]
 
 MIDDLEWARE = [
