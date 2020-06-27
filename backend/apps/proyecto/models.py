@@ -62,18 +62,17 @@ class Reunion(models.Model):
         db_table = 'Reunion'
 
 
-
-"""class RiesgoProyecto(models.Model):
+class Recurso(models.Model):
     pass
 
 
-class Riesgo(models.Model):
+class Requisito(models.Model):
     pass
 
 
-class detalleProyecto(models.Model):
-    proyecto = models.OneToOneField(Proyecto, on_delete=models.CASCADE)
-    # tiempo = models.DateField()
-    costo = models.DecimalField()
-    presupuesto = models.DecimalField()
-    moneda = models.CharField(max_length=1)"""
+class Objetivo(models.Model):
+    pass
+
+
+class Seguridad(models.Model):
+    pass

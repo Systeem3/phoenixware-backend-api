@@ -74,7 +74,6 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
         if user.tipo_usuario == "2":
             my_proyecto = self.get_object()
             serializer = MiembroSerializer(data=request.data)
-            print(request.data)
             if serializer.is_valid():
                 serializer.save(proyecto=my_proyecto)
                 usuario = Usuario.objects.get(pk=request.data["usuario"])
