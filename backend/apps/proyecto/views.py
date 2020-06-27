@@ -14,7 +14,7 @@ from ..usuario.models import Usuario
 from ..usuario.serializers import UsuarioSerializer
 from ..proceso.serializers import ProcesoSerilizer
 from ..proceso.models import Proceso
-from utility.utility import get_list_users
+from utility.utility import get_list_users, get_miembros
 
 
 class ProyectoModelViewset(viewsets.ModelViewSet):
@@ -23,8 +23,8 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny, ]
 
     def list(self, request):
-        user = request.user
         self.permission_classes = [permissions.IsAuthenticated, ]
+        user = request.user
         if user.tipo_usuario == "1" or user.tipo_usuario == "2":
             self.queryset = Proyecto.objects.all()
         else:
@@ -70,23 +70,30 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def agregar_miembro(self, request, pk=None):
-        my_proyecto = self.get_object()
-        serializer = MiembroSerializer(data=request.data)
-        print(request.data)
-        if serializer.is_valid():
-            serializer.save(proyecto=my_proyecto)
-            usuario = Usuario.objects.get(pk=request.data["usuario"])
-            notify.send(request.user, recipient=usuario, verb="te agregaron a un proyecto",
-                        description="bienvenido al proyecto")
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        if user.tipo_usuario == "2":
+            my_proyecto = self.get_object()
+            serializer = MiembroSerializer(data=request.data)
+            print(request.data)
+            if serializer.is_valid():
+                serializer.save(proyecto=my_proyecto)
+                usuario = Usuario.objects.get(pk=request.data["usuario"])
+                notify.send(request.user, recipient=usuario, verb="te agregaron a un proyecto",
+                            description="bienvenido al proyecto")
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response = {
+            "detail": _("No permitido")
+        }
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['get'])
     def listar_miembros(self, request, pk=None):
         my_proyecto = self.get_object()
         self.queryset = Miembro.objects.filter(proyecto=my_proyecto)
         serializer = MiembroSerializer(self.queryset, many=True)
-        return Response(serializer.data)
+        response = get_miembros(serializer.data)
+        return Response(response)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def crear_proceso(self, request, pk=None):
