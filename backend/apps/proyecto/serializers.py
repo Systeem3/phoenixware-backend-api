@@ -17,6 +17,7 @@ class ProyectoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proyecto
         fields = '__all__'
+        extra_kwargs = {'tiempo': {'required': False}}
 
     def validate_fecha_inicio(self, fecha_inicio):
         if fecha_inicio < datetime.now().date():

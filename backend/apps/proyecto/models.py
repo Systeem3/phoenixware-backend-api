@@ -27,10 +27,10 @@ class Proyecto(models.Model):
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_finalizacion = models.DateField()
-    """alcance = models.TextField()
-    presupuesto = models.DecimalField(max_digits=10, decimal_places=3)
-    costo = models.DecimalField(max_digits=10, decimal_places=3)
-    tiempo = models.PositiveSmallIntegerField()"""
+    alcance = models.TextField(blank=True)
+    presupuesto = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    costo = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    tiempo = models.PositiveSmallIntegerField()
     estado = models.CharField(max_length=1)
     metodologia = models.ForeignKey(Metodologia, on_delete=models.CASCADE)
 

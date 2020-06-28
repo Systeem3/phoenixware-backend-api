@@ -14,13 +14,25 @@ from ..usuario.models import Usuario
 from ..usuario.serializers import UsuarioSerializer
 from ..proceso.serializers import ProcesoSerilizer
 from ..proceso.models import Proceso
-from utility.utility import get_list_users, get_miembros
+from utility.utility import (
+    get_list_users,
+    get_miembros,
+    get_time
+)
 
 
 class ProyectoModelViewset(viewsets.ModelViewSet):
     queryset = Proyecto.objects.all()
     serializer_class = ProyectoSerializer
     permission_classes = [permissions.AllowAny, ]
+
+    def create(self, request, *args, **kwargs):
+        serializer = ProyectoSerializer(data=request.data)
+        if serializer.is_valid():
+            tiempo = get_time(request.data["fecha_inicio"], request.data["fecha_finalizacion"])
+            serializer.save(tiempo=tiempo)
+            return self.list(request)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
         self.permission_classes = [permissions.IsAuthenticated, ]
