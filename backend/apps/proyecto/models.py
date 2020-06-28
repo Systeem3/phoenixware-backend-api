@@ -27,6 +27,10 @@ class Proyecto(models.Model):
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_finalizacion = models.DateField()
+    """alcance = models.TextField()
+    presupuesto = models.DecimalField(max_digits=10, decimal_places=3)
+    costo = models.DecimalField(max_digits=10, decimal_places=3)
+    tiempo = models.PositiveSmallIntegerField()"""
     estado = models.CharField(max_length=1)
     metodologia = models.ForeignKey(Metodologia, on_delete=models.CASCADE)
 
@@ -60,19 +64,3 @@ class Reunion(models.Model):
 
     class Meta:
         db_table = 'Reunion'
-
-
-class Recurso(models.Model):
-    pass
-
-
-class Requisito(models.Model):
-    pass
-
-
-class Objetivo(models.Model):
-    pass
-
-
-class Seguridad(models.Model):
-    pass
