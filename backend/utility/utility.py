@@ -1,6 +1,7 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+import datetime
 from apps.usuario.models import Usuario
 from apps.proyecto.models import Proyecto
 
@@ -51,3 +52,10 @@ def get_miembros(data):
         }
         result.append(obj)
     return result
+
+
+def get_time(fecha_1, fecha_2):
+    fecha_1 = datetime.datetime.strptime(fecha_1, '%Y-%m-%d')
+    fecha_2 = datetime.datetime.strptime(fecha_2, '%Y-%m-%d')
+    time = fecha_2 - fecha_1
+    return int(time.days)

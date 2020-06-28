@@ -58,7 +58,9 @@ INSTALLED_APPS = [
     'notifications',
     'apps.usuario',
     'apps.proyecto',
-    'apps.proceso'
+    'apps.proceso',
+    'apps.actividad',
+    'django_seed'
 ]
 
 MIDDLEWARE = [

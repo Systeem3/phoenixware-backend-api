@@ -13,6 +13,9 @@ class Metodologia(models.Model):
     tipo = models.CharField(max_length=1, choices=TYPE)
     estado = models.CharField(max_length=1)
 
+    def __str__(self):
+        return self.nombre
+
     class Meta:
         db_table = 'Metodologia'
 
