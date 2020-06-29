@@ -25,8 +25,9 @@ urlpatterns = [
     path('api/auth/', include('apps.usuario.urls')),
     path('api/', include('apps.proyecto.urls')),
     path('api/', include('apps.proceso.urls')),
-    # path('api/', include('apps.actividad.urls')),
-    # path('api/', include('apps.riesgo.urls'))
+    path('api/', include('apps.actividad.urls')),
+    path('api/', include('apps.riesgo.urls')),
+    # path('api/', include('apps.informacion_proyecto.urls'))
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

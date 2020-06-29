@@ -3,6 +3,6 @@ venv/
 backend/db.sqlite3
 /__pycache__/
 *.pyc
-backend/media/pictures/
+backend/media/pictures/*/**
 !backend/media/pictures/default.jpg
 secrets.json

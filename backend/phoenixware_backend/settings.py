@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'apps.proyecto',
     'apps.proceso',
     'apps.actividad',
+    'apps.riesgo',
     'django_seed'
 ]
 
