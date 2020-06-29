@@ -9,10 +9,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import Proceso
 from .serializers import ProcesoSerilizer
-from ..actividad.models import Actividad, Asignacion
-from ..actividad.serializers import ActividadSerilizer, AsignacionSerilizer
+from ..actividad.models import Actividad
+from ..actividad.serializers import ActividadSerilizer
 from ..proyecto.models import Miembro, Proyecto
 from ..proyecto.serializers import MiembroSerializer
+
 
 
 # Create your views here.
@@ -20,7 +21,7 @@ from ..proyecto.serializers import MiembroSerializer
 class ProcesoModelViewSet(viewsets.ModelViewSet):
     queryset = Proceso.objects.all()
     serializer_class = ProcesoSerilizer
-    permission_classes = permissions.IsAuthenticated
+    permission_classes = [permissions.IsAuthenticated]
     """lookup_field = 'pk'
     lookup_url_kwarg = 'process_pk'"""
 

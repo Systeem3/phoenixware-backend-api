@@ -24,7 +24,7 @@ class Actividad(models.Model):
 class Asignacion(models.Model):
     miembro = models.ForeignKey(Miembro, on_delete=models.CASCADE)
     actividad = models.ForeignKey(Actividad, on_delete=models.CASCADE)
-    puntuacion = models.DecimalField(max_digits=5, decimal_places=3)
+    puntuacion = models.DecimalField(max_digits=5, decimal_places=3, null=True)
 
     class Meta:
         db_table = 'Asignacion'

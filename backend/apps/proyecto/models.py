@@ -62,6 +62,7 @@ class Reunion(models.Model):
     descripcion = models.TextField()
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
     fecha = models.DateField()
+    hora = models.CharField(max_length=10)
     lugar = models.CharField(max_length=255)
     estado = models.CharField(max_length=1)
 

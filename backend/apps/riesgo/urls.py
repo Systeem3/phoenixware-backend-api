@@ -1,12 +1,12 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import ActividadModelViewSet
+from .views import RiesgoProyectoViewSet
 
 ROUTER = routers.DefaultRouter()
-ROUTER.register("actividad", ActividadModelViewSet)
+ROUTER.register("riesgo", RiesgoProyectoViewSet)
 
 urlpatterns = [
-    # http://localhost:8000/api/actividad/<router-viewsets>
+    # http://localhost:8000/api/riesgo/<router-viewsets>
     path('', include(ROUTER.urls)),
 ]

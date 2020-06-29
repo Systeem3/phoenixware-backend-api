@@ -13,4 +13,4 @@ class AsignacionSerilizer(serializers.ModelSerializer):
     class Meta:
         model = Asignacion
         fields = '__all__'
-        extra_kwargs = {'Actividad': {'required': False}}
+        extra_kwargs = {'actividad': {'required': False}}
