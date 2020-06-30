@@ -1,5 +1,4 @@
 from django.db import models
-from ..proyecto.models import Metodologia
 from ..proyecto.models import Proyecto
 
 
@@ -18,7 +17,6 @@ class Proceso(models.Model):
         ("T", "Tecnico"),
         ("A", "Apoyo")
     )
-    metodologia = models.ForeignKey(Metodologia, on_delete=models.CASCADE)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=255)
     categoria = models.CharField(max_length=1, choices=CATEGORIA)

@@ -3,14 +3,7 @@ from rest_framework import serializers
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Proyecto, Metodologia, Reunion, Miembro
-
-
-class MetodologiaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Metodologia
-        fields = '__all__'
-        extra_kwargs = {'proyecto': {'required': False}}
+from .models import Proyecto, Reunion, Miembro
 
 
 class ProyectoSerializer(serializers.ModelSerializer):

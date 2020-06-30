@@ -3,6 +3,9 @@ from rest_framework import (
     permissions,
     status
 )
+from rest_framework.generics import (
+    DestroyAPIView
+)
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils.translation import ugettext_lazy as _
@@ -17,7 +20,8 @@ from ..proceso.models import Proceso
 from utility.utility import (
     get_list_users,
     get_miembros,
-    get_time
+    get_time,
+    get_proyectos
 )
 
 
@@ -45,7 +49,9 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
                         where miembro.usuario_id={}""".format(user.id)
             self.queryset = Proyecto.objects.raw(query)
         serializer = ProyectoSerializer(self.queryset, many=True)
-        return Response(serializer.data)
+        response = get_proyectos(serializer.data)
+
+        return Response(response)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def crear_reunion(self, request, pk=None):
@@ -113,7 +119,7 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
         if user.tipo_usuario == "2":
             serializer = ProcesoSerilizer(data=request.data)
             if serializer.is_valid():
-                serializer.save(proyecto=my_proyecto, metodologia=my_proyecto.metodologia)
+                serializer.save(proyecto=my_proyecto)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -124,7 +130,7 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
             if miembro_serializer.data[0]["rol"] == "L":
                 serializer = ProcesoSerilizer(data=request.data)
                 if serializer.is_valid():
-                    serializer.save(proyecto=my_proyecto, metodologia=my_proyecto.metodologia)
+                    serializer.save(proyecto=my_proyecto)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         response = {
@@ -143,4 +149,10 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
 class ReunionModelViewset(viewsets.ModelViewSet):
     queryset = Reunion.objects.all()
     serializer_class = ReunionSerializer
+    permission_classes = [permissions.AllowAny, ]
+
+
+class DeleteMiembro(DestroyAPIView):
+    queryset = Miembro.objects.all()
+    serializer_class = MiembroSerializer
     permission_classes = [permissions.AllowAny, ]

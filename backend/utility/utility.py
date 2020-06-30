@@ -36,7 +36,7 @@ def get_miembros(data):
         proyecto = Proyecto.objects.get(pk=row["proyecto"])
         usuario = Usuario.objects.get(pk=row["usuario"])
         # empleado = Empleado.objects.filter(usuario=usuario)
-        if(row["rol"]=='L'):
+        if (row["rol"] == 'L'):
             rol = "Lider"
         else:
             rol = "Miembro"
@@ -63,3 +63,28 @@ def get_time(fecha_1, fecha_2):
     fecha_2 = datetime.datetime.strptime(fecha_2, '%Y-%m-%d')
     time = fecha_2 - fecha_1
     return int(time.days)
+
+
+def get_proyectos(data):
+    result = []
+    for row in data:
+        if row["metodologia"] == '1':
+            metodologia = 'Agil'
+        if row["metodologia"] == '2':
+            metodologia = 'Hibrido'
+        if row["metodologia"] == '3':
+            metodologia = 'Tradicional'
+        if row["tipo"] == 'S':
+            tipo = "Servicio"
+        if row["tipo"] == 'P':
+            tipo = "Producto"
+        obj = {
+            'nombre': row["nombre"],
+            'tipo': tipo,
+            'descripcion': row["descripcion"],
+            'fecha_inicio': row["fecha_inicio"],
+            'fecha_finalizacion': row["fecha_finalizacion"],
+            'metodologia': metodologia
+        }
+        result.append(obj)
+    return result

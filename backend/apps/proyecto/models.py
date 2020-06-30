@@ -2,28 +2,18 @@ from django.db import models
 from ..usuario.models import Usuario
 
 
-class Metodologia(models.Model):
-    TYPE = (
-        ("A", "Agil"),
-        ("H", "Hibrido"),
-        ("T", "Tradicional")
-    )
-    nombre = models.CharField(max_length=100)
-    descripcion = models.TextField()
-    tipo = models.CharField(max_length=1, choices=TYPE)
-    estado = models.CharField(max_length=1)
 
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        db_table = 'Metodologia'
 
 
 class Proyecto(models.Model):
     TYPE_PROJECT = (
         ("S", "Servicio"),
         ("P", "Producto"),
+    )
+    METODOLOGIA = (
+        ("1", "Agil"),
+        ("2", "Hibrido"),
+        ("3", "Tradicional")
     )
     nombre = models.CharField(max_length=255)
     tipo = models.CharField(max_length=1, choices=TYPE_PROJECT)
@@ -35,7 +25,7 @@ class Proyecto(models.Model):
     costo = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
     tiempo = models.PositiveSmallIntegerField()
     estado = models.CharField(max_length=1)
-    metodologia = models.ForeignKey(Metodologia, on_delete=models.CASCADE)
+    metodologia = models.CharField(max_length=1, choices=METODOLOGIA)
 
     class Meta:
         db_table = 'Proyecto'
