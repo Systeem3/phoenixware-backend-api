@@ -21,6 +21,11 @@ class UsuarioListViewSet(ListAPIView):
     serializer_class = UsuarioSerializer
     permission_classes = [AllowAnyUser, ]
 
+    def list(self, request, *args, **kwargs):
+        queryset = Usuario.objects.filter(is_active=True)
+        serializer = UsuarioSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class UsuarioDetailUpdateViewSet(RetrieveUpdateAPIView):
     """gets an user data and allow update it"""

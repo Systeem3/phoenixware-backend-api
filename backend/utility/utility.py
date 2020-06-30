@@ -36,9 +36,13 @@ def get_miembros(data):
         proyecto = Proyecto.objects.get(pk=row["proyecto"])
         usuario = Usuario.objects.get(pk=row["usuario"])
         # empleado = Empleado.objects.filter(usuario=usuario)
+        if(row["rol"]=='L'):
+            rol = "Lider"
+        else:
+            rol = "Miembro"
         obj = {
             "id": row["id"],
-            "rol": row["rol"],
+            "rol": rol,
             "proyecto": {
                 'id': proyecto.id,
                 'nombre': proyecto.nombre,
