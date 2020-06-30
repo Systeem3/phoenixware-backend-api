@@ -34,6 +34,8 @@ class ReunionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reunion
         fields = '__all__'
+        extra_kwargs = {'proyecto': {'required': False},
+                        'descripcion': {'required': False}}
 
     def validate_fecha(self, fecha):
         if fecha < datetime.now().date():

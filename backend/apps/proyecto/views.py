@@ -138,3 +138,9 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
         self.queryset = Proceso.objects.filter(proyecto=my_proyecto)
         serializer = ProcesoSerilizer(self.queryset, many=True)
         return Response(serializer.data)
+
+
+class ReunionModelViewset(viewsets.ModelViewSet):
+    queryset = Reunion.objects.all()
+    serializer_class = ReunionSerializer
+    permission_classes = [permissions.AllowAny, ]

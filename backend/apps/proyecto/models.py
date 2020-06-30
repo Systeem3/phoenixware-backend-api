@@ -59,7 +59,7 @@ class Miembro(models.Model):
 
 class Reunion(models.Model):
     nombre = models.CharField(max_length=255)
-    descripcion = models.TextField()
+    descripcion = models.TextField(blank=True)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
     fecha = models.DateField()
     hora = models.CharField(max_length=10)
