@@ -19,7 +19,7 @@ from ..proyecto.serializers import MiembroSerializer, ProyectoSerializer
 
 class RiesgoProyectoViewSet(viewsets.GenericViewSet):
     queryset = Proyecto.objects.all()
-    serializer_class = RiesgoSerilizer
+    serializer_class = RiesgoProyectoSerilizer
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def crear_riesgo_proyecto(self, request, pk=None):
@@ -55,3 +55,6 @@ class RiesgoProyectoViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
 
+class RiesgoProyectoModelViewSet(viewsets.ModelViewSet):
+    queryset = RiesgoProyecto.objects.all()
+    serializer_class = RiesgoProyectoSerilizer

@@ -79,12 +79,16 @@ def get_proyectos(data):
         if row["tipo"] == 'P':
             tipo = "Producto"
         obj = {
+            'id': row["id"],
             'nombre': row["nombre"],
             'tipo': tipo,
             'descripcion': row["descripcion"],
             'fecha_inicio': row["fecha_inicio"],
             'fecha_finalizacion': row["fecha_finalizacion"],
-            'metodologia': metodologia
+            'metodologia': metodologia,
+            'presupuesto': row["presupuesto"],
+            'costo': row["costo"],
+            'tiempo': row["tiempo"],
         }
         result.append(obj)
     return result

@@ -12,7 +12,7 @@ class ProyectoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {'tiempo': {'required': False}}
 
-    def validate_fecha_inicio(self, fecha_inicio):
+"""    def validate_fecha_inicio(self, fecha_inicio):
         if fecha_inicio < datetime.now().date():
             raise serializers.ValidationError(_("Date cannot be in the past"))
         return fecha_inicio
@@ -20,7 +20,7 @@ class ProyectoSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data["fecha_finalizacion"] < data["fecha_inicio"]:
             raise serializers.ValidationError(_("la fecha de finalizacion no puede ser menor a la de inicio"))
-        return data
+        return data"""
 
 
 class ReunionSerializer(serializers.ModelSerializer):

@@ -35,18 +35,18 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
         if serializer.is_valid():
             tiempo = get_time(request.data["fecha_inicio"], request.data["fecha_finalizacion"])
             serializer.save(tiempo=tiempo)
-            return self.list(request)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
         self.permission_classes = [permissions.IsAuthenticated, ]
         user = request.user
         if user.tipo_usuario == "1" or user.tipo_usuario == "2":
-            self.queryset = Proyecto.objects.all()
+            self.queryset = Proyecto.objects.filter(estado='A')
         else:
             query = """select * from Proyecto 
                         inner join miembro on miembro.proyecto_id=Proyecto.id 
-                        where miembro.usuario_id={}""".format(user.id)
+                        where miembro.usuario_id={} and Proyecto.estado='A'""".format(user.id)
             self.queryset = Proyecto.objects.raw(query)
         serializer = ProyectoSerializer(self.queryset, many=True)
         response = get_proyectos(serializer.data)
