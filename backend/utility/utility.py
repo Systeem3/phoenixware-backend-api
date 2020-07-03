@@ -92,3 +92,31 @@ def get_proyectos(data):
         }
         result.append(obj)
     return result
+
+
+def get_procesos(data):
+    result = []
+    CATEGORIA = {
+        "1": "Inicio",
+        "2": "Diseño",
+        "3": "Elaboración",
+        "4": "ejecución",
+        "5": "Cierre"
+    }
+
+    TIPO = {
+        "G": "Gerencial",
+        "T": "Tecnico",
+        "A": "Apoyo"
+    }
+    for row in data:
+        obj = {
+            "id": row["id"],
+            "nombre": row["nombre"],
+            "categoria": CATEGORIA[row["categoria"]],
+            "tipo": TIPO[row["tipo"]],
+            "estado": row["estado"],
+            "proyecto": row["proyecto"]
+        }
+        result.append(obj)
+    return result

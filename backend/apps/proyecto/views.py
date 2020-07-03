@@ -21,7 +21,8 @@ from utility.utility import (
     get_list_users,
     get_miembros,
     get_time,
-    get_proyectos
+    get_proyectos,
+    get_procesos
 )
 
 
@@ -112,6 +113,15 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
         response = get_miembros(serializer.data)
         return Response(response)
 
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def usuarios_no_pertenecen(self, request, pk=None):
+        my_proyecto = self.get_object()
+        query = """select * from Usuario WHERE Usuario.id NOT IN 
+                    (select Miembro.usuario_id from Miembro where Miembro.proyecto_id={});""".format(my_proyecto.id)
+        self.queryset = Usuario.objects.raw(query)
+        serializer = UsuarioSerializer(self.queryset, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def crear_proceso(self, request, pk=None):
         my_proyecto = self.get_object()
@@ -142,6 +152,15 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
     def listar_procesos(self, request, pk=None):
         my_proyecto = self.get_object()
         self.queryset = Proceso.objects.filter(proyecto=my_proyecto)
+        serializer = ProcesoSerilizer(self.queryset, many=True)
+        response = get_procesos(serializer.data)
+        return Response(response)
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def listar_procesos_categoria(self, request, pk=None):
+        my_proyecto = self.get_object()
+        categoria = request.GET["categoria"]
+        self.queryset = Proceso.objects.filter(proyecto=my_proyecto, categoria=categoria)
         serializer = ProcesoSerilizer(self.queryset, many=True)
         return Response(serializer.data)
 
