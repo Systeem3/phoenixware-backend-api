@@ -1,12 +1,15 @@
-from django.core.mail import EmailMultiAlternatives
+# from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 import datetime
 from apps.usuario.models import Usuario
 from apps.proyecto.models import Proyecto
+from django.core import mail
 
 
 # from rest_framework.renderers import JSONRenderer
+from django.utils.html import strip_tags
+
 
 def send_mail(subject, to_email, html_email_template, context):
     """
@@ -16,10 +19,12 @@ def send_mail(subject, to_email, html_email_template, context):
     subject = ''.join(subject.splitlines())
     body = render_to_string(html_email_template, context)
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL')
-    email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+    plain_message = strip_tags(body)
+    mail.send_mail(subject, plain_message, from_email, [to_email], html_message=body)
+"""email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
     email_message.attach_alternative(body, 'text/html')
+    email_message.send()"""
 
-    email_message.send()
 
 
 def get_list_users(query):

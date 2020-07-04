@@ -239,6 +239,39 @@ class InfoProyectoViewSet(viewsets.GenericViewSet):
         }
         return Response(response)
 
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def costo_proyecto(self, request, pk=None):
+        recursos_directos = Recurso.objects.filter(tipo_costo='1')
+        recursos_indirectos = Recurso.objects.filter(tipo_costo='2')
+        recursos_extraordinarios = Recurso.objects.filter(tipo_costo='3')
+        acum_directos = 0
+        acum_indirectos = 0
+        acum_extraordinarios = 0
+        print("hello")
+        for recurso in recursos_directos:
+            acum_directos = acum_directos + float(recurso.costo)
+        for recurso in recursos_indirectos:
+            acum_indirectos = acum_indirectos + float(recurso.costo)
+        for recurso in recursos_extraordinarios:
+            acum_extraordinarios = acum_extraordinarios + float(recurso.costo)
+        print("hello")
+        total = acum_directos + acum_indirectos + acum_extraordinarios
+        optimista = total - (total * 0.15)
+        probable = total
+        pesimista = total + (total * 15)
+        estimado = (optimista + probable + pesimista) / 3
+        response = {
+            "directo": acum_directos,
+            "indirectos": acum_indirectos,
+            "extraordinarios": acum_extraordinarios,
+            "total": total,
+            "optimista": optimista,
+            "probable": probable,
+            "pesimista": pesimista,
+            "estimado": estimado
+        }
+        return Response(response)
+
 
 class RecursoModelViewset(viewsets.ModelViewSet):
     queryset = Recurso.objects.all()

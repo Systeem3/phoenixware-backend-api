@@ -22,6 +22,7 @@ class Recurso(models.Model):
     tipo = models.CharField(max_length=1, choices=TYPE)
     tipo_costo = models.CharField(max_length=1, choices=TYPE_COSTO)
     costo = models.DecimalField(max_digits=10, decimal_places=3)
+    vida_util = models.IntegerField(null=True)
     estado = models.CharField(max_length=1)
 
     class Meta:
