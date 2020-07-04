@@ -25,7 +25,7 @@ def send_mail(subject, to_email, html_email_template, context):
 def get_list_users(query):
     list_users = []
     for data in query:
-        print(data["id"])
+        #print(data["id"])
         list_users.append(Usuario.objects.get(pk=data["id"]))
     return list_users
 
@@ -116,6 +116,33 @@ def get_procesos(data):
             "categoria": CATEGORIA[row["categoria"]],
             "tipo": TIPO[row["tipo"]],
             "estado": row["estado"],
+            "proyecto": row["proyecto"]
+        }
+        result.append(obj)
+    return result
+
+
+def get_resources(data):
+    result = []
+    TYPE = {
+        "1": "Recursos Humanos",
+        "2": "Recursos físicos no depreciables",
+        "3": "Recursos físicos depreciables",
+        "4": "Recursos intangibles",
+    }
+    TYPE_COSTO = {
+        "1": "Costo Directos",
+        "2": "Costos Indirectos",
+        "3": "Costo Extraordinarios",
+    }
+    for row in data:
+        obj = {
+            "id": row["id"],
+            "nombre": row["nombre"],
+            "tipo": TYPE[row["tipo"]],
+            "tipo_costo": TYPE_COSTO[row["tipo_costo"]],
+            "estado": row["estado"],
+            "costo":row["costo"],
             "proyecto": row["proyecto"]
         }
         result.append(obj)
