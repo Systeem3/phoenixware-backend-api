@@ -25,6 +25,9 @@ from .serializers import (
 
 from ..proyecto.models import Miembro, Proyecto
 from ..proyecto.serializers import MiembroSerializer
+from ..actividad.models import Actividad
+from ..proceso.models import Proceso
+from ..usuario.models import Usuario, Empleado
 from utility.utility import (
     get_resources
 )
@@ -199,6 +202,42 @@ class InfoProyectoViewSet(viewsets.GenericViewSet):
         self.queryset = Seguridad.objects.filter(proyecto=my_project)
         serializer = SeguridadSerializer(self.queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def info_proyecto(self, request, pk=None):
+        my_project = self.get_object()
+        query = """select * from Actividad
+                    inner join Proceso on Proceso.proyecto_id={}
+                    where Actividad.proceso_id=Proceso.id""".format(my_project.id)
+        query2 = """select * from Actividad
+                            inner join Proceso on Proceso.proyecto_id={}
+                            where Actividad.proceso_id=Proceso.id and Actividad.estado='A'""".format(my_project.id)
+        actividades_totales = len(Actividad.objects.raw(query))
+        actividades_completadas = len(Actividad.objects.raw(query2))
+        miembros_totales = len(Miembro.objects.filter(proyecto=my_project))
+        lider = Miembro.objects.filter(proyecto=my_project, rol='L')
+        procesos_totales = len(Proceso.objects.filter(proyecto=my_project))
+        lider = Usuario.objects.get(pk=lider[0].usuario_id)
+        lider = Empleado.objects.get(pk=lider.empleado_id)
+        METODOLOGIA = {
+            "1": "Agil",
+            "2": "Hibrido",
+            "3": "Tradicional",
+        }
+        response = {
+            "nombre": my_project.nombre,
+            "presupuesto": my_project.presupuesto,
+            "costo": my_project.costo,
+            "miembros": miembros_totales,
+            "actividades_asignadas": actividades_totales,
+            "actividades_completadas": actividades_completadas,
+            "procesos_totales": procesos_totales,
+            "metodologia": METODOLOGIA[my_project.metodologia],
+            "fecha_inicio": my_project.fecha_inicio,
+            "fecha_finalizacion": my_project.fecha_finalizacion,
+            "lider": lider.nombre + " " + lider.apellido
+        }
+        return Response(response)
 
 
 class RecursoModelViewset(viewsets.ModelViewSet):

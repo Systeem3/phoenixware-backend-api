@@ -11,7 +11,7 @@ class Actividad(models.Model):
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_finalizacion = models.DateField()
-    predecesor = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    # predecesor = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     estado = models.CharField(max_length=1)
 
     def __str__(self):

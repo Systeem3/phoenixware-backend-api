@@ -65,3 +65,4 @@ class ActividadModelViewSet(viewsets.ModelViewSet):
         self.queryset = Asignacion.objects.filter(actividad=my_activida)
         serializer = AsignacionSerilizer(self.queryset, many=True)
         return Response(serializer.data)
+
