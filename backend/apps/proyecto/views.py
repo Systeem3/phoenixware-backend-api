@@ -22,7 +22,8 @@ from utility.utility import (
     get_miembros,
     get_time,
     get_proyectos,
-    get_procesos
+    get_procesos,
+    get_reuniones
 )
 
 
@@ -169,6 +170,11 @@ class ReunionModelViewset(viewsets.ModelViewSet):
     queryset = Reunion.objects.all()
     serializer_class = ReunionSerializer
     permission_classes = [permissions.AllowAny, ]
+
+    def list(self, request, *args, **kwargs):
+        serializer = ReunionSerializer(self.queryset, many=True)
+        response = get_reuniones(serializer.data)
+        return Response(response)
 
 
 class DeleteMiembro(DestroyAPIView):

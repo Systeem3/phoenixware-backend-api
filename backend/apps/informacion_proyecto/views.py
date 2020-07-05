@@ -211,32 +211,52 @@ class InfoProyectoViewSet(viewsets.GenericViewSet):
                     where Actividad.proceso_id=Proceso.id""".format(my_project.id)
         query2 = """select * from Actividad
                             inner join Proceso on Proceso.proyecto_id={}
-                            where Actividad.proceso_id=Proceso.id and Actividad.estado='A'""".format(my_project.id)
+                            where Actividad.proceso_id=Proceso.id and Actividad.estado='3'""".format(my_project.id)
         actividades_totales = len(Actividad.objects.raw(query))
         actividades_completadas = len(Actividad.objects.raw(query2))
         miembros_totales = len(Miembro.objects.filter(proyecto=my_project))
         lider = Miembro.objects.filter(proyecto=my_project, rol='L')
         procesos_totales = len(Proceso.objects.filter(proyecto=my_project))
-        lider = Usuario.objects.get(pk=lider[0].usuario_id)
-        lider = Empleado.objects.get(pk=lider.empleado_id)
-        METODOLOGIA = {
-            "1": "Agil",
-            "2": "Hibrido",
-            "3": "Tradicional",
-        }
-        response = {
-            "nombre": my_project.nombre,
-            "presupuesto": my_project.presupuesto,
-            "costo": my_project.costo,
-            "miembros": miembros_totales,
-            "actividades_asignadas": actividades_totales,
-            "actividades_completadas": actividades_completadas,
-            "procesos_totales": procesos_totales,
-            "metodologia": METODOLOGIA[my_project.metodologia],
-            "fecha_inicio": my_project.fecha_inicio,
-            "fecha_finalizacion": my_project.fecha_finalizacion,
-            "lider": lider.nombre + " " + lider.apellido
-        }
+        if(len(lider)>0):
+            lider = Usuario.objects.get(pk=lider[0].usuario_id)
+            lider = Empleado.objects.get(pk=lider.empleado_id)
+            METODOLOGIA = {
+                "1": "Agil",
+                "2": "Hibrido",
+                "3": "Tradicional",
+            }
+            response = {
+                "nombre": my_project.nombre,
+                "presupuesto": my_project.presupuesto,
+                "costo": my_project.costo,
+                "miembros": miembros_totales,
+                "actividades_asignadas": actividades_totales,
+                "actividades_completadas": actividades_completadas,
+                "procesos_totales": procesos_totales,
+                "metodologia": METODOLOGIA[my_project.metodologia],
+                "fecha_inicio": my_project.fecha_inicio,
+                "fecha_finalizacion": my_project.fecha_finalizacion,
+                "lider": lider.nombre + " " + lider.apellido
+            }
+        else:
+            METODOLOGIA = {
+                "1": "Agil",
+                "2": "Hibrido",
+                "3": "Tradicional",
+            }
+            response = {
+                "nombre": my_project.nombre,
+                "presupuesto": my_project.presupuesto,
+                "costo": my_project.costo,
+                "miembros": miembros_totales,
+                "actividades_asignadas": actividades_totales,
+                "actividades_completadas": actividades_completadas,
+                "procesos_totales": procesos_totales,
+                "metodologia": METODOLOGIA[my_project.metodologia],
+                "fecha_inicio": my_project.fecha_inicio,
+                "fecha_finalizacion": my_project.fecha_finalizacion,
+                "lider": ''
+            }
         return Response(response)
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])

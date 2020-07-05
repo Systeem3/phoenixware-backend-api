@@ -6,7 +6,6 @@ from apps.usuario.models import Usuario
 from apps.proyecto.models import Proyecto
 from django.core import mail
 
-
 # from rest_framework.renderers import JSONRenderer
 from django.utils.html import strip_tags
 
@@ -21,16 +20,17 @@ def send_mail(subject, to_email, html_email_template, context):
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL')
     plain_message = strip_tags(body)
     mail.send_mail(subject, plain_message, from_email, [to_email], html_message=body)
+
+
 """email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
     email_message.attach_alternative(body, 'text/html')
     email_message.send()"""
 
 
-
 def get_list_users(query):
     list_users = []
     for data in query:
-        #print(data["id"])
+        # print(data["id"])
         list_users.append(Usuario.objects.get(pk=data["id"]))
     return list_users
 
@@ -147,8 +147,25 @@ def get_resources(data):
             "tipo": TYPE[row["tipo"]],
             "tipo_costo": TYPE_COSTO[row["tipo_costo"]],
             "estado": row["estado"],
-            "costo":row["costo"],
+            "costo": row["costo"],
             "proyecto": row["proyecto"]
+        }
+        result.append(obj)
+    return result
+
+
+def get_reuniones(data):
+    result = []
+
+    for row in data:
+        proyecto = Proyecto.objects.get(pk=row["proyecto"])
+        obj = {
+            "nombre": row["nombre"],
+            "descripcion": row["descripcion"],
+            "fecha": row["fecha"],
+            "hora": row["hora"],
+            "lugar": row["lugar"],
+            "proyecto": proyecto.nombre
         }
         result.append(obj)
     return result
