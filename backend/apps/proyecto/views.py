@@ -33,6 +33,7 @@ class ProyectoModelViewset(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny, ]
 
     def create(self, request, *args, **kwargs):
+        self.permission_classes = [permissions.AllowAny, ]
         serializer = ProyectoSerializer(data=request.data)
         if serializer.is_valid():
             tiempo = get_time(request.data["fecha_inicio"], request.data["fecha_finalizacion"])
